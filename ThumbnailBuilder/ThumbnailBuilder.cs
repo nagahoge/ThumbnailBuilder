@@ -8,10 +8,11 @@ using System.Diagnostics;
 
 namespace ThumbnailBuilder {
     /// <summary>
-    /// This class is a wrapper of creating thumbnail of image strategy.
+    /// This class is a wrapper of creating thumbnail image of strategy.
+    /// Thumbnail picture is just a scale-down image and its aspect ratio is not changed.
     /// </summary>
     public class Thumbnail : IDisposable {
-        private Image originalImage;
+        private Image baseImage;
         private int thumbnailWidth;
         private int thumbnailHeight;
         private Color backgroundColor = Color.White;
@@ -20,8 +21,10 @@ namespace ThumbnailBuilder {
         private bool isBuilded = false;
         private bool isDisposed = false;
 
-        protected Thumbnail(Image originalImage, int thumbnailWidth, int thumbnailHeight) {
-            this.originalImage = originalImage;
+        protected Thumbnail(Image baseImage, int thumbnailWidth, int thumbnailHeight) {
+            if (thumbnailWidth <= 0 || thumbnailHeight <= 0) throw new ArgumentException("size of thumbnail shouldn't less or equal to 0 value.");
+
+            this.baseImage = baseImage;
             resultImage = new Bitmap(thumbnailWidth, thumbnailHeight);
             g = Graphics.FromImage(resultImage);
             this.thumbnailWidth = thumbnailWidth;
@@ -52,18 +55,15 @@ namespace ThumbnailBuilder {
         /// </summary>
         /// <exception>InvalidOperationException</exception>
         public static Thumbnail FromFile(string fileName, int thumbnailWidth, int thumbnailHeight) {
-            if (fileName == null) {
-                throw new ArgumentNullException("fileName shouldn't null.");
-            }
-            //if (fileName == null) throw new ArgumentNullException();
-            if (thumbnailWidth <= 0 || thumbnailHeight <= 0) throw new ArgumentException("size of thumbnail shouldn't less or equal to 0 value.");
+            if (fileName == null) throw new ArgumentNullException("fileName shouldn't null.");
 
-            try {
-                Image image = Image.FromFile(fileName);
-                return new Thumbnail(image, thumbnailWidth, thumbnailHeight);
-            } catch (OutOfMemoryException e) {
-                throw new InvalidOperationException(e.Message, e);
-            }
+            Image baseImage = Image.FromFile(fileName);
+            return new Thumbnail(baseImage, thumbnailWidth, thumbnailHeight);
+        }
+
+        public static Thumbnail FromImage(Image baseImage, int thumbnailWidth, int thumbnailHeight) {
+            if (baseImage == null) throw new NullReferenceException("baseImage shouldn't null.");
+            return new Thumbnail(baseImage, thumbnailWidth, thumbnailHeight);
         }
 
         /// <summary>
@@ -85,19 +85,19 @@ namespace ThumbnailBuilder {
         private void CreateThumbnail() {
             g.FillRectangle(new SolidBrush(backgroundColor), 0, 0, thumbnailWidth, thumbnailHeight);
 
-            float fw = (float)thumbnailWidth / (float)originalImage.Width;
-            float fh = (float)thumbnailHeight / (float)originalImage.Height;
+            float fw = (float)thumbnailWidth / (float)baseImage.Width;
+            float fh = (float)thumbnailHeight / (float)baseImage.Height;
 
             float scale = Math.Min(fw, fh);
-            fw = originalImage.Width * scale;
-            fh = originalImage.Height * scale;
+            fw = baseImage.Width * scale;
+            fh = baseImage.Height * scale;
 
-            g.DrawImage(originalImage, (thumbnailWidth - fw) / 2, (thumbnailHeight - fh) / 2, fw, fh);
+            g.DrawImage(baseImage, (thumbnailWidth - fw) / 2, (thumbnailHeight - fh) / 2, fw, fh);
         }
 
         public void Dispose() {
             if (!isDisposed) {
-                originalImage.Dispose();
+                baseImage.Dispose();
                 g.Dispose();
                 if (!isBuilded) resultImage.Dispose();
             }

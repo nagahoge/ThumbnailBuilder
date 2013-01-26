@@ -84,16 +84,16 @@ namespace ThumbnailBuilderTest
 
         [TestMethod()]
         public void TestBuild() {
-            Thumbnail builder = Thumbnail.FromFile(red_white_1000x500, 1000, 500);
-            Image image = builder.Build();
-            Assert.AreEqual(1000, image.Width);
-            Assert.AreEqual(500, image.Height);
-            Bitmap bitmap = new Bitmap(image);
-            Assert.AreEqual(Color.FromArgb(255, 255, 0, 0), bitmap.GetPixel(0, 0));
-            Assert.AreEqual(Color.FromArgb(255, 255, 0, 0), bitmap.GetPixel(0, 500 - 1));
-            Assert.AreEqual(Color.FromArgb(255, 255, 255, 255), bitmap.GetPixel(1000 - 1, 0));
-            Assert.AreEqual(Color.FromArgb(255, 255, 255, 255), bitmap.GetPixel(1000 - 1, 500 - 1));
-
+            using (Thumbnail builder = Thumbnail.FromFile(red_white_1000x500, 1000, 500))
+            using (Image image = builder.Build()) {
+                Assert.AreEqual(1000, image.Width);
+                Assert.AreEqual(500, image.Height);
+                Bitmap bitmap = new Bitmap(image);
+                Assert.AreEqual(Color.FromArgb(255, 255, 0, 0), bitmap.GetPixel(0, 0));
+                Assert.AreEqual(Color.FromArgb(255, 255, 0, 0), bitmap.GetPixel(0, 500 - 1));
+                Assert.AreEqual(Color.FromArgb(255, 255, 255, 255), bitmap.GetPixel(1000 - 1, 0));
+                Assert.AreEqual(Color.FromArgb(255, 255, 255, 255), bitmap.GetPixel(1000 - 1, 500 - 1));
+            }
 
             // +---------------------+---------------------+
             // |(0, 0)                             (499, 0)|
@@ -118,32 +118,34 @@ namespace ThumbnailBuilderTest
             // |                                           |
             // |(0, 499)                         (499, 499)|
             // +---------------------+---------------------+
-            builder = Thumbnail.FromFile(red_white_1000x500, 500, 500);
-            builder.BackgroundColor = blue;
-            image = builder.Build();
-            Assert.AreEqual(500, image.Width);
-            Assert.AreEqual(500, image.Height);
-            bitmap = new Bitmap(image);
+            using (Thumbnail builder = Thumbnail.FromFile(red_white_1000x500, 500, 500)) {
+                builder.BackgroundColor = blue;
+                using (Image image = builder.Build())
+                using (Bitmap bitmap = new Bitmap(image)) {
+                    Assert.AreEqual(500, image.Width);
+                    Assert.AreEqual(500, image.Height);
 
-            Assert.AreEqual(blue, bitmap.GetPixel(0, 0));
-            Assert.AreEqual(blue, bitmap.GetPixel(499, 0));
-            Assert.AreEqual(blue, bitmap.GetPixel(0, 124));
-            Assert.AreEqual(blue, bitmap.GetPixel(499, 124));
+                    Assert.AreEqual(blue, bitmap.GetPixel(0, 0));
+                    Assert.AreEqual(blue, bitmap.GetPixel(499, 0));
+                    Assert.AreEqual(blue, bitmap.GetPixel(0, 124));
+                    Assert.AreEqual(blue, bitmap.GetPixel(499, 124));
 
-            Assert.AreEqual(red, bitmap.GetPixel(0, 125));
-            Assert.AreEqual(red, bitmap.GetPixel(249, 125));
-            Assert.AreEqual(red, bitmap.GetPixel(0, 374));
-            Assert.AreEqual(red, bitmap.GetPixel(249, 374));
+                    Assert.AreEqual(red, bitmap.GetPixel(0, 125));
+                    Assert.AreEqual(red, bitmap.GetPixel(249, 125));
+                    Assert.AreEqual(red, bitmap.GetPixel(0, 374));
+                    Assert.AreEqual(red, bitmap.GetPixel(249, 374));
 
-            Assert.AreEqual(white, bitmap.GetPixel(250, 125));
-            Assert.AreEqual(white, bitmap.GetPixel(499, 125));
-            Assert.AreEqual(white, bitmap.GetPixel(250, 374));
-            Assert.AreEqual(white, bitmap.GetPixel(499, 374));
+                    Assert.AreEqual(white, bitmap.GetPixel(250, 125));
+                    Assert.AreEqual(white, bitmap.GetPixel(499, 125));
+                    Assert.AreEqual(white, bitmap.GetPixel(250, 374));
+                    Assert.AreEqual(white, bitmap.GetPixel(499, 374));
 
-            Assert.AreEqual(blue, bitmap.GetPixel(0, 375));
-            Assert.AreEqual(blue, bitmap.GetPixel(499, 375));
-            Assert.AreEqual(blue, bitmap.GetPixel(0, 499));
-            Assert.AreEqual(blue, bitmap.GetPixel(499, 499));
+                    Assert.AreEqual(blue, bitmap.GetPixel(0, 375));
+                    Assert.AreEqual(blue, bitmap.GetPixel(499, 375));
+                    Assert.AreEqual(blue, bitmap.GetPixel(0, 499));
+                    Assert.AreEqual(blue, bitmap.GetPixel(499, 499));
+                }
+            }
 
 
             // +--------------+--------------+--------------+
@@ -175,16 +177,17 @@ namespace ThumbnailBuilderTest
             // |              |              |              |
             // |(0, 49)       |              |      (49, 49)|
             // +--------------+--------------+--------------+
-            builder = Thumbnail.FromFile(yellow_black_111x333, 50, 50);
-            image = builder.Build();
-            
-            Assert.AreEqual(50, image.Width);
-            Assert.AreEqual(50, image.Height);
-            bitmap = new Bitmap(image);
-            Assert.AreEqual(white, bitmap.GetPixel(16, 24));
-            Assert.AreEqual(yellow, bitmap.GetPixel(17, 24));
-            Assert.AreEqual(white, bitmap.GetPixel(16, 25));
-            Assert.AreEqual(black, bitmap.GetPixel(17, 25));
+            using (Thumbnail builder = Thumbnail.FromFile(yellow_black_111x333, 50, 50))
+            using (Image image = builder.Build())
+            using (Bitmap bitmap = new Bitmap(image)) {
+                Assert.AreEqual(50, image.Width);
+                Assert.AreEqual(50, image.Height);
+                
+                Assert.AreEqual(white, bitmap.GetPixel(16, 24));
+                Assert.AreEqual(yellow, bitmap.GetPixel(17, 24));
+                Assert.AreEqual(white, bitmap.GetPixel(16, 25));
+                Assert.AreEqual(black, bitmap.GetPixel(17, 25));
+            }
         }
 
         [TestMethod()]
@@ -198,13 +201,46 @@ namespace ThumbnailBuilderTest
             Assert.IsNotNull(Thumbnail.TryFromFile(red_white_1000x500, 10, 10));
             Assert.IsNotNull(Thumbnail.TryFromFile(yellow_black_111x333, 10, 10));
 
-            Assert.IsNull(Thumbnail.TryFromFile("not_exist_filename.bmp", 10, 10));
+            using (Thumbnail image = Thumbnail.TryFromFile("not_exist_filename.bmp", 10, 10)) {
+                Assert.IsNull(image);
+            }
+        }
+
+        [TestMethod()]
+        public void TestFromImage() {
+            using (Image baseImage = Image.FromFile(gif)) 
+            using (Thumbnail builder = Thumbnail.FromImage(baseImage, 15, 15)) {
+                Image image = builder.Build();
+                Assert.IsNotNull(image);
+                image.Dispose();
+            }
+        }
+
+        [TestMethod()]
+        public void TestFromImageWithBaseImageNull() {
+            try {
+                Thumbnail.FromImage(null, 15, 15);
+                Assert.Fail();
+            } catch { }
         }
 
         [TestMethod()]
         public void TestExpand() {
-            Image image = Thumbnail.FromFile(gif, 10000, 10000).Build();
-            // TODO additional check
+            using (Thumbnail builder = Thumbnail.FromFile(gif, 10000, 10000))
+            using (Image image = builder.Build()) {
+                Assert.AreEqual(10000, image.Width);
+                Assert.AreEqual(10000, image.Height);
+            }
+        }
+
+        [TestMethod()]
+        public void TestMultiTimeBuild() {
+            using (Thumbnail builder = Thumbnail.FromFile(gif, 100, 100)) {
+                for (int i = 0; i < 10; i++) {
+                    Image image = builder.Build();
+                    image.Dispose();
+                }
+            }
         }
     }
 }
