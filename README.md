@@ -13,6 +13,11 @@ Now, I made a small library and testing it, there is no need to re-testing.
 You just use it.
 
 
+## Download
+
+You can [download pre-compiled dll file](https://s3.amazonaws.com/nagahoge/github/thumbnail-builder/ThumbnailBuilder_v1.0.zip) (Compiled for .NET Framework4 Extended).
+
+
 ## Usage
 
 The usage is simple.
