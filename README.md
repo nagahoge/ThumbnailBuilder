@@ -9,7 +9,9 @@ so there are much copie codes derived from specific web-sites.
 This is not a reinventing the wheel but at least remaking the wheel.
 So, there is a necessity of testing them.
 
-Now, I made a small library and testing it, there is no need to re-testing.
+Now, I made a small library and [tested it](https://github.com/nagahoge/ThumbnailBuilder/blob/master/ThumbnailBuilderTest/ThumbnailBuilderTest.cs), 
+there is no need to re-testing.
+
 You just use it.
 
 
@@ -45,6 +47,8 @@ This is a sample code to use this library.
 
 ThumbnailBuilder rely on System.Drawing.Image.FromFile(string) method so 
 Thumnail.FromFile method also depend on its behavior.
+
+You can reference API documentation [here](https://s3.amazonaws.com/nagahoge/github/thumbnail-builder/v1.0/api/Index.html).
 
 
 ## License
